@@ -14,7 +14,7 @@ if errorlevel 1 (
   echo ==== FEHLER - Details siehe oben bzw. im Ordner logs ====
 ) else (
   echo.
-  echo ==== Fertig. Ergebnisse liegen im Ordner ausgabe ====
+  echo ==== Ende - Meldungen siehe oben ====
 )
 echo Fenster schliessen: beliebige Taste druecken.
 pause >nul
