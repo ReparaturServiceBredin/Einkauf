@@ -2,19 +2,30 @@
 # Geheimnisse (API-Key, Account-ID) gehören in die Datei .env, NICHT hierher.
 
 [eingabe]
-# Standard-Bedarfsliste, wenn beim Start keine Datei angegeben wird (.xlsx, .xls oder .csv)
-datei = "eingang/Bedarfsliste.xlsx"
-# Spaltenüberschriften in der Bedarfsliste (Groß-/Kleinschreibung egal)
-spalte_herstellernummer = "Herstellernummer"
-spalte_menge = "Menge"
+# Eingangsordner: Bedarfsliste(n) hier hineinlegen (.xls, .xlsx, .csv). Beim Lauf ohne
+# Dateiangabe werden alle Dateien darin verarbeitet und danach nach "erledigt\" verschoben.
+# Darf auch ein Netz-/OneDrive-Ordner sein, z. B. 'C:\Users\name\OneDrive\Einkauf'
+ordner = "eingang"
+erledigt_verschieben = true
 # Tabellenblatt bei Excel-Dateien; leer = erstes Blatt
 blatt = ""
 # Gleiche Herstellernummer mehrfach in der Liste -> Mengen addieren
 mengen_zusammenfassen = true
 
+# Spaltenüberschriften der Bedarfsliste (Groß-/Kleinschreibung egal).
+# Voreingestellt für den Mention-Export "bedarfsliste_mention.xls".
+spalte_herstellernummer = "herstellernr"
+spalte_menge = "bedarf"            # "menge" ist im Mention-Export die Bestellmenge (meist 0)
+# Optional (leer lassen, wenn nicht vorhanden):
+spalte_ean = "eancode"             # Ausweichsuche, wenn die Herstellernummer nichts findet
+spalte_hersteller = "hersteller"   # hilft bei mehrdeutigen Treffern
+spalte_artikelnr = "nummer"        # eigene Artikelnummer -> Ausgabe
+spalte_bezeichnung = "benennung"   # falls ITscope keine Bezeichnung liefert
+spalte_letzter_ek = "letzter_ek"   # zum Vergleich -> Ausgabe
+
 [ausgabe]
 ordner = "ausgabe"
-# {datum} wird durch JJJJ-MM-TT_HHMM ersetzt
+# {datum} -> JJJJ-MM-TT_HHMM, {name} -> Dateiname der Bedarfsliste (ohne Endung)
 dateiname = "Einkauf_{datum}.xlsx"
 
 [api]
@@ -22,6 +33,8 @@ basis_url = "https://api.itscope.com/2.1"
 # Suchpfad für eine Herstellernummer; {sku} wird URL-kodiert eingesetzt.
 # BITTE mit der ITscope-API-Doku abgleichen und ggf. anpassen.
 such_pfad = "/products/search/hstpid={sku}/standard.json"
+# Suche per EAN als Ausweichlösung; leer = keine EAN-Suche
+such_pfad_ean = "/products/search/ean={ean}/standard.json"
 # Link zum Produkt in der ITscope-Weboberfläche; {puid} = ITscope-Produkt-ID, {sku} = Herstellernummer
 produkt_link = "https://www.itscope.com/red/app#products/details/{puid}"
 timeout_sekunden = 30
@@ -49,6 +62,8 @@ eigene_konditionen_feld = ""
 produktliste = ["product", "products", "productList.product"]
 produkt_id = ["puid", "id"]
 produkt_herstellernummer = ["manufacturerSKU", "manufacturerSku", "hstpid"]
+produkt_ean = ["ean", "eans", "eanList.ean"]
+produkt_hersteller = ["manufacturerName", "manufacturer.name", "manufacturer"]
 produkt_bezeichnung = ["productNameWithManufacturer", "productName", "shortDescription", "name"]
 angebote = ["supplierItems", "supplierItem", "supplierItems.supplierItem", "offers"]
 lieferant_name = ["supplierName", "supplier.name", "distributorName"]

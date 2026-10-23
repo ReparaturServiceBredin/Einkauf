@@ -1,6 +1,7 @@
-Herstellernummer;Menge;Kommentar
-20XW00A1GE;3;Notebook Kunde Müller
-SNS-AHHH-1;10;fehlt bei ITscope
-CF259A;5;Toner
-20XW00A1GE;2;doppelt -> wird addiert
-MZ-77E1T0B/EU;20;SSD
+nummer;benennung;herstellernr;hersteller;eancode;menge;bedarf;letzter_ek
+A1001;Lenovo ThinkPad E14;20XW00A1GE;Lenovo;;0;3;699,00
+A1002;Unbekannter Artikel;SNS-AHHH-1;;;0;10;5,00
+A1003;HP 59A Toner;CF259A;HP;;0;5;88,50
+A1001;Lenovo ThinkPad E14;20XW00A1GE;Lenovo;;0;2;699,00
+A1004;Samsung 870 EVO 1TB;MZ-77E1T0B/EU;Samsung;;0;20;61,00
+A1005;Artikel ohne Bedarf;XYZ-0;;;0;0;1,00

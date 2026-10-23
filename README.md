@@ -1,14 +1,21 @@
 # Täglicher Einkauf über ITscope
 
-`einkauf.py` liest eine Bedarfsliste (Excel/CSV), fragt jede Herstellernummer bei der
-ITscope Produkt-API ab und wählt pro Artikel den günstigsten **eigenen** Lieferanten
-mit ausreichendem Lagerbestand. Das Ergebnis ist eine Excel-Datei in `ausgabe\`.
+`einkauf.py` liest die Bedarfsliste aus Mention (`bedarfsliste_mention.xls`, auch .xlsx/.csv),
+fragt jede Herstellernummer bei der ITscope Produkt-API ab (findet sie nichts, zusätzlich
+die EAN) und wählt pro Artikel den günstigsten **eigenen** Lieferanten mit ausreichendem
+Lagerbestand. Das Ergebnis ist eine Excel-Datei in `ausgabe\`.
+
+**Im Alltag:** Bedarfsliste aus Mention exportieren und in `C:\Einkauf\eingang` speichern –
+fertig. Um 14:45 läuft der Abgleich automatisch, die Liste wandert danach nach
+`eingang\erledigt`. Sofort auswerten: Datei auf **`Einkauf_jetzt.bat`** ziehen (oder die
+Datei in `eingang` legen und `Einkauf_jetzt.bat` doppelklicken) – das Ergebnis öffnet
+sich direkt in Excel.
 
 ## Ergebnis-Excel
 
 Blatt **Einkauf**: Herstellernummer, Bezeichnung, Menge, bester Lieferant, Preis netto,
 Lagerbestand, zweitbester Lieferant + Preis, Gesamtsumme (Formel Menge × Preis),
-ITscope-Link, Status, Hinweis. Darunter die Gesamtsumme und die Liste aller Artikel,
+ITscope-Link, Status, Hinweis, eigene Artikelnummer, letzter EK (aus Mention), EAN. Darunter die Gesamtsumme und die Liste aller Artikel,
 die nicht gefunden wurden oder nicht bestellbar sind.
 
 | Farbe   | Status                            | Bedeutung                                                    |
@@ -24,7 +31,9 @@ Blatt **Alle Angebote**: alle berücksichtigten Angebote je Artikel zum Nachvoll
 
 Fehler bei einzelnen Artikeln brechen den Lauf nicht ab. Nur bei falschen Zugangsdaten
 (HTTP 401/403) wird abgebrochen, weil dann alle Artikel betroffen wären.
-Gleiche Herstellernummern in der Bedarfsliste werden zusammengefasst (Mengen addiert).
+Gleiche Herstellernummern in der Bedarfsliste werden zusammengefasst (Mengen addiert),
+Zeilen mit Bedarf 0 übersprungen. Als Menge wird die Mention-Spalte `bedarf` verwendet
+(die Spalte `menge` ist dort die Bestellmenge und meist 0).
 
 **Rate Limit:** Zwischen zwei Anfragen liegt mindestens `min_abstand_sekunden`
 (Standard 1 s). Bei HTTP 429 wird der `Retry-After`-Header beachtet, bei 5xx/Netzwerk-
@@ -59,8 +68,8 @@ fehlern mit wachsender Wartezeit bis zu `max_versuche`-mal wiederholt.
    ITSCOPE_API_KEY=dein-api-key
    ```
 5. **`config.toml` anpassen** (mit Notepad öffnen):
-   - `[eingabe]` `spalte_herstellernummer` / `spalte_menge`: exakte Spaltenüberschriften
-     eurer Bedarfsliste, `datei`: wo die tägliche Liste liegt.
+   - `[eingabe]`: Die Spalten sind schon auf den Mention-Export eingestellt. `ordner`
+     ändern, falls die Liste woanders landen soll (z. B. Netzlaufwerk/OneDrive).
    - `[lieferanten]` `meine`: Namen (wie in ITscope angezeigt) oder Lieferanten-IDs der
      Lieferanten, bei denen ihr ein Kundenkonto habt. **Ohne Eintrag werden alle
      Angebote berücksichtigt.**
@@ -68,11 +77,20 @@ fehlern mit wachsender Wartezeit bis zu `max_versuche`-mal wiederholt.
 
 ## 2. Starten
 
+Am einfachsten: siehe „Im Alltag“ oben (`eingang`-Ordner bzw. `Einkauf_jetzt.bat`).
+Tipp: Verknüpfung von `Einkauf_jetzt.bat` auf den Desktop legen (Rechtsklick → Senden an →
+Desktop) – Dateien lassen sich auch auf die Verknüpfung ziehen.
+
+Per Befehl:
+
 ```powershell
 cd C:\Einkauf
-.\.venv\Scripts\python.exe einkauf.py                           # Datei aus config.toml
-.\.venv\Scripts\python.exe einkauf.py "D:\Bedarf\heute.xlsx"    # andere Datei
+.\.venv\Scripts\python.exe einkauf.py                              # alles aus "eingang"
+.\.venv\Scripts\python.exe einkauf.py "D:\Bedarf\bedarfsliste.xls"  # genau diese Datei
 ```
+
+Liegt nichts in `eingang`, beendet sich das Skript einfach ohne Ergebnisdatei.
+Direkt angegebene Dateien werden nicht verschoben.
 
 Probelauf ohne API mit den Beispieldaten:
 
@@ -112,8 +130,8 @@ Sofort testen: `schtasks /Run /TN "Einkauf ITscope"` – danach in
 5. Reiter **Einstellungen**: „Aufgabe so schnell wie möglich nach einem verpassten Start
    ausführen“ anhaken. OK.
 
-Hinweise: Liegt die Bedarfsliste auf einem Netzlaufwerk, in `config.toml` den UNC-Pfad
-verwenden – in einfachen Anführungszeichen: `datei = '\\server\freigabe\Bedarfsliste.xlsx'` –, da Laufwerksbuchstaben
+Hinweise: Liegt der Eingangsordner auf einem Netzlaufwerk, in `config.toml` den UNC-Pfad
+verwenden – in einfachen Anführungszeichen: `ordner = '\\server\freigabe\Einkauf'` –, da Laufwerksbuchstaben
 ohne Anmeldung nicht verbunden sind. Rückgabewert ≠ 0 bedeutet: Lauf komplett
 gescheitert (Konfiguration, Bedarfsliste oder Zugangsdaten) – sichtbar in der
 Aufgabenplanung unter „Letztes Ausführungsergebnis“.
