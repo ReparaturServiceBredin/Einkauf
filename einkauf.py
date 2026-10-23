@@ -257,7 +257,9 @@ class ITscopeClient:
                 time.sleep(wartezeit)
                 continue
             if r.status_code in (401, 403):
-                raise PermissionError(f"HTTP {r.status_code}: Zugangsdaten/Rechte prüfen (.env)")
+                raise PermissionError(
+                    f"HTTP {r.status_code} ({'Login abgelehnt' if r.status_code == 401 else 'Zugriff verweigert'})"
+                    f" für {r.url} – Antwort von ITscope: {r.text.strip()[:500] or '(leer)'}")
             if not r.ok:
                 raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
             if not r.content.strip():
