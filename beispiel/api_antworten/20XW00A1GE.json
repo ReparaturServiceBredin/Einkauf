@@ -1,0 +1,6 @@
+{"product":[{"puid":"1234567890","manufacturerSKU":"20XW00A1GE","productNameWithManufacturer":"Lenovo ThinkPad E14 Gen 3, Ryzen 5, 16GB, 512GB SSD",
+ "supplierItems":[
+  {"supplierId":"101","supplierName":"Ingram Micro","price":712.40,"stock":2},
+  {"supplierId":"102","supplierName":"ALSO Deutschland","price":725.10,"stock":14},
+  {"supplierId":"103","supplierName":"TD SYNNEX","price":731.00,"stock":40},
+  {"supplierId":"999","supplierName":"Fremdhändler ohne Konto","price":650.00,"stock":100}]}]}

@@ -1,0 +1,57 @@
+# Konfiguration für einkauf.py
+# Geheimnisse (API-Key, Account-ID) gehören in die Datei .env, NICHT hierher.
+
+[eingabe]
+# Standard-Bedarfsliste, wenn beim Start keine Datei angegeben wird (.xlsx, .xls oder .csv)
+datei = "eingang/Bedarfsliste.xlsx"
+# Spaltenüberschriften in der Bedarfsliste (Groß-/Kleinschreibung egal)
+spalte_herstellernummer = "Herstellernummer"
+spalte_menge = "Menge"
+# Tabellenblatt bei Excel-Dateien; leer = erstes Blatt
+blatt = ""
+# Gleiche Herstellernummer mehrfach in der Liste -> Mengen addieren
+mengen_zusammenfassen = true
+
+[ausgabe]
+ordner = "ausgabe"
+# {datum} wird durch JJJJ-MM-TT_HHMM ersetzt
+dateiname = "Einkauf_{datum}.xlsx"
+
+[api]
+basis_url = "https://api.itscope.com/2.1"
+# Suchpfad für eine Herstellernummer; {sku} wird URL-kodiert eingesetzt.
+# BITTE mit der ITscope-API-Doku abgleichen und ggf. anpassen.
+such_pfad = "/products/search/hstpid={sku}/standard.json"
+# Link zum Produkt in der ITscope-Weboberfläche; {puid} = ITscope-Produkt-ID, {sku} = Herstellernummer
+produkt_link = "https://www.itscope.com/red/app#products/details/{puid}"
+timeout_sekunden = 30
+# Mindestabstand zwischen zwei API-Anfragen (Rate Limit). 1.0 = max. 60 Anfragen/Minute
+min_abstand_sekunden = 1.0
+# Wiederholungen bei 429 (Too Many Requests), 5xx und Netzwerkfehlern
+max_versuche = 5
+
+[lieferanten]
+# Nur Angebote dieser Lieferanten berücksichtigen ("meine Lieferanten" mit Kundenkonto).
+# Name oder ITscope-Lieferanten-ID, Groß-/Kleinschreibung egal. Teilstrings genügen nicht – exakter Name.
+meine = [
+    # "Ingram Micro",
+    # "ALSO Deutschland",
+    # "TD SYNNEX",
+]
+# Optional: Feld im Angebot, das "eigene Konditionen / Kundenkonto vorhanden" anzeigt
+# (z. B. "ownConditions"). Wenn gesetzt, werden nur Angebote berücksichtigt, bei denen es wahr ist.
+# Sind "meine" UND dieses Feld leer, werden ALLE Angebote berücksichtigt (mit Warnung im Log).
+eigene_konditionen_feld = ""
+
+[felder]
+# Wo stehen die Werte in der API-Antwort? Je Wert eine Liste möglicher Pfade
+# (Punkt-getrennt), der erste vorhandene gewinnt. An die echte API-Antwort anpassen.
+produktliste = ["product", "products", "productList.product"]
+produkt_id = ["puid", "id"]
+produkt_herstellernummer = ["manufacturerSKU", "manufacturerSku", "hstpid"]
+produkt_bezeichnung = ["productNameWithManufacturer", "productName", "shortDescription", "name"]
+angebote = ["supplierItems", "supplierItem", "supplierItems.supplierItem", "offers"]
+lieferant_name = ["supplierName", "supplier.name", "distributorName"]
+lieferant_id = ["supplierId", "supplier.id", "distributorId"]
+preis = ["price", "priceCalc", "netPrice", "purchasePrice"]
+lagerbestand = ["stock", "stockQuantity", "availability.stock"]
