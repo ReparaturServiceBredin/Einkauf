@@ -36,15 +36,21 @@ fehlern mit wachsender Wartezeit bis zu `max_versuche`-mal wiederholt.
 
 1. **Python installieren** (3.11 oder neuer): <https://www.python.org/downloads/windows/>
    Beim Setup unbedingt **„Add python.exe to PATH“** anhaken.
-2. Diesen Ordner z. B. nach `C:\Einkauf` kopieren.
-3. **Eingabeaufforderung** (`cmd`) öffnen und eingeben:
-   ```bat
-   cd /d C:\Einkauf
+2. **Dateien holen:** Auf GitHub im Repository oben links den Branch
+   `claude/python-daily-procurement-script-6lj8gq` wählen → grüner Button **Code** →
+   **Download ZIP**. ZIP entpacken und den *Inhalt* des entpackten Ordners nach
+   `C:\Einkauf` kopieren, sodass dort direkt `einkauf.py`, `requirements.txt`,
+   `.env.example` usw. liegen.
+3. **PowerShell** öffnen und eingeben (funktioniert genauso in `cmd`):
+   ```powershell
+   cd C:\Einkauf
    python -m venv .venv
-   .venv\Scripts\python.exe -m pip install -r requirements.txt
+   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
    ```
+   Wichtig: Alle Befehle immer **in `C:\Einkauf`** ausführen – die Zeile davor muss
+   `PS C:\Einkauf>` lauten, nicht `PS C:\Users\...>`.
 4. **Zugangsdaten:** `.env.example` nach `.env` kopieren und ausfüllen:
-   ```bat
+   ```powershell
    copy .env.example .env
    notepad .env
    ```
@@ -62,16 +68,16 @@ fehlern mit wachsender Wartezeit bis zu `max_versuche`-mal wiederholt.
 
 ## 2. Starten
 
-```bat
-cd /d C:\Einkauf
-.venv\Scripts\python.exe einkauf.py                         :: Datei aus config.toml
-.venv\Scripts\python.exe einkauf.py "D:\Bedarf\heute.xlsx"  :: andere Datei
+```powershell
+cd C:\Einkauf
+.\.venv\Scripts\python.exe einkauf.py                           # Datei aus config.toml
+.\.venv\Scripts\python.exe einkauf.py "D:\Bedarf\heute.xlsx"    # andere Datei
 ```
 
 Probelauf ohne API mit den Beispieldaten:
 
-```bat
-.venv\Scripts\python.exe einkauf.py beispiel\Bedarfsliste.csv --mock beispiel\api_antworten
+```powershell
+.\.venv\Scripts\python.exe einkauf.py beispiel\Bedarfsliste.csv --mock beispiel\api_antworten
 ```
 
 Ergebnis: `ausgabe\Einkauf_JJJJ-MM-TT_HHMM.xlsx`, Protokoll: `logs\einkauf_JJJJ-MM-TT.log`.
@@ -81,14 +87,14 @@ Ist die Ergebnisdatei gerade in Excel geöffnet, wird automatisch unter neuem Na
 
 **Variante A – ein Befehl** (`cmd` öffnen, Pfad ggf. anpassen):
 
-```bat
-schtasks /Create /TN "Einkauf ITscope" /SC DAILY /ST 14:45 /TR "\"C:\Einkauf\start_einkauf.bat\""
+```powershell
+schtasks /Create /TN "Einkauf ITscope" /SC DAILY /ST 14:45 /TR "C:\Einkauf\start_einkauf.bat"
 ```
 
 Nur werktags (Mo–Fr):
 
-```bat
-schtasks /Create /TN "Einkauf ITscope" /SC WEEKLY /D MON,TUE,WED,THU,FRI /ST 14:45 /TR "\"C:\Einkauf\start_einkauf.bat\""
+```powershell
+schtasks /Create /TN "Einkauf ITscope" /SC WEEKLY /D MON,TUE,WED,THU,FRI /ST 14:45 /TR "C:\Einkauf\start_einkauf.bat"
 ```
 
 Sofort testen: `schtasks /Run /TN "Einkauf ITscope"` – danach in
