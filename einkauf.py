@@ -594,6 +594,10 @@ def main(argv=None) -> int:
         ordner, dateien = finde_eingangsdateien(cfg)
         if not dateien:
             log.info("Keine Bedarfsliste in %s – nichts zu tun.", ordner)
+            if args.oeffnen and hasattr(os, "startfile"):
+                print("\n>>> Der Ordner 'eingang' ist leer. Bitte die Bedarfsliste dort hineinlegen"
+                      "\n>>> (er wird jetzt geöffnet) oder die Datei direkt auf Einkauf_jetzt.bat ziehen.")
+                os.startfile(ordner)
             return 0
     else:
         dateien = [Path(d).resolve() for d in args.bedarfsliste]
